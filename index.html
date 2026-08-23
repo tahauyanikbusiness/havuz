@@ -278,6 +278,17 @@ header{
 
     <div class="divider"></div>
 
+    <h2>Google tablosu</h2>
+    <p>İsteğe bağlı. Adresi girersen her kayıt Telegram'ın yanı sıra tabloya da satır olarak yazılır. Boş bırakırsan sadece Telegram'a gider.</p>
+    <div class="field">
+      <span>Betik adresi</span>
+      <input id="cfgSheet" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <button class="ghost" id="cfgSheetTest" style="width:100%">Tabloya test satırı yaz</button>
+    <p class="hint">Google, yazma işleminin sonucunu uygulamaya bildirmiyor. Test satırının düştüğünü tablodan gözle kontrol et.</p>
+
+    <div class="divider"></div>
+
     <h2>İşlem butonları</h2>
     <p>Sırayla ekranda görünürler. Silmek için çarpıya dokun.</p>
     <div class="chips" id="opChips"></div>
@@ -330,6 +341,7 @@ header{
   var cfg = {
     token: store.get("hk_token") || "",
     chat:  store.get("hk_chat")  || "",
+    sheet: store.get("hk_sheet") || "",
     ops:   (function(){
       try { var raw = store.get("hk_ops"); return raw ? JSON.parse(raw) : DEFAULT_OPS.slice(); }
       catch(e){ return DEFAULT_OPS.slice(); }
@@ -339,6 +351,7 @@ header{
   function saveCfg(){
     store.set("hk_token", cfg.token);
     store.set("hk_chat",  cfg.chat);
+    store.set("hk_sheet", cfg.sheet);
     store.set("hk_ops",   JSON.stringify(cfg.ops));
   }
 
@@ -364,6 +377,28 @@ header{
     el.className = bad ? "show bad" : "show";
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function(){ el.className = bad ? "bad" : ""; }, 3200);
+  }
+
+  function parts(){
+    var d = new Date();
+    return {
+      date: pad(d.getDate()) + "." + pad(d.getMonth()+1) + "." + d.getFullYear(),
+      time: pad(d.getHours()) + ":" + pad(d.getMinutes()),
+      ym:   d.getFullYear() + "-" + pad(d.getMonth()+1)
+    };
+  }
+
+  /* Google tablosuna satır yazar. Cevap okunamadığı için sessiz çalışır. */
+  function toSheet(payload){
+    if (!cfg.sheet) return;
+    try {
+      fetch(cfg.sheet, {
+        method:"POST",
+        mode:"no-cors",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      }).catch(function(){});
+    } catch(e){}
   }
 
   /* ---------- telegram ---------- */
@@ -449,9 +484,12 @@ header{
   function padStartStr(s, n){ while (s.length < n) s = " " + s; return s; }
 
   function sendOlcum(){
-    var lines = [], any = false;
+    var lines = [], row = [], any = false;
+    var p = parts();
+
     FIELDS.forEach(function(f){
       var v = readField(f);
+      row.push(v);
       if (!v) return;
       any = true;
       lines.push(padEndStr(f.label, 18) + padStartStr(v, 6) + (f.unit ? " " + f.unit : ""));
@@ -462,9 +500,17 @@ header{
     btn.disabled = true;
     btn.textContent = "Gönderiliyor…";
 
-    var msg = "🏊 <b>Havuz Ölçümü</b> — " + esc(stamp(true)) + "\n\n<pre>" + esc(lines.join("\n")) + "</pre>";
+    var msg = "🏊 <b>Havuz Ölçümü</b> — " + esc(p.date + " " + p.time) + "\n\n<pre>" + esc(lines.join("\n")) + "</pre>";
 
     send(msg).then(function(){
+      toSheet({
+        kind:"olcum",
+        ym: p.ym,
+        head: ["Tarih","Saat"].concat(FIELDS.map(function(f){
+          return f.unit ? f.label + " (" + f.unit + ")" : f.label;
+        })),
+        row: [p.date, p.time].concat(row)
+      });
       FIELDS.forEach(clearField);
       toast("Ölçüm gönderildi.");
     }).catch(function(err){
@@ -500,11 +546,15 @@ header{
     for (var i = 0; i < all.length; i++) all[i].disabled = state;
   }
 
+  var ISLEM_HEAD = ["Tarih","Saat","İşlem"];
+
   function sendOp(name, btn){
     lockOps(true);
     var original = btn.textContent;
+    var p = parts();
     btn.textContent = "Gönderiliyor…";
-    send("🔧 <b>" + esc(stamp(false)) + "</b> — " + esc(name)).then(function(){
+    send("🔧 <b>" + esc(p.time) + "</b> — " + esc(name)).then(function(){
+      toSheet({ kind:"islem", ym:p.ym, head:ISLEM_HEAD, row:[p.date, p.time, name] });
       toast(name + " kaydedildi.");
     }).catch(function(err){
       toast(err.message, true);
@@ -526,9 +576,11 @@ header{
     var txt = $("noteText").value.trim();
     if (!txt) { toast("Önce bir şeyler yaz."); return; }
     var btn = $("noteSend");
+    var p = parts();
     btn.disabled = true;
     btn.textContent = "Gönderiliyor…";
-    send("🔧 <b>" + esc(stamp(false)) + "</b> — " + esc(txt)).then(function(){
+    send("🔧 <b>" + esc(p.time) + "</b> — " + esc(txt)).then(function(){
+      toSheet({ kind:"islem", ym:p.ym, head:ISLEM_HEAD, row:[p.date, p.time, txt] });
       closeNote();
       toast("Kayıt gönderildi.");
     }).catch(function(err){
@@ -579,6 +631,7 @@ header{
   function openSettings(){
     $("cfgToken").value = cfg.token;
     $("cfgChat").value = cfg.chat;
+    $("cfgSheet").value = cfg.sheet;
     buildChips();
     $("app").hidden = true;
     $("setup").hidden = true;
@@ -588,6 +641,7 @@ header{
   function closeSettings(){
     cfg.token = $("cfgToken").value.trim();
     cfg.chat  = $("cfgChat").value.trim();
+    cfg.sheet = $("cfgSheet").value.trim();
     saveCfg();
     $("settings").hidden = true;
     route();
@@ -626,6 +680,15 @@ header{
     }).then(function(){
       b.disabled = false; b.textContent = "Test mesajı gönder";
     });
+  });
+
+  $("cfgSheetTest").addEventListener("click", function(){
+    cfg.sheet = $("cfgSheet").value.trim();
+    saveCfg();
+    if (!cfg.sheet) { toast("Önce betik adresini gir."); return; }
+    var p = parts();
+    toSheet({ kind:"islem", ym:p.ym, head:ISLEM_HEAD, row:[p.date, p.time, "Bağlantı testi"] });
+    toast("Satır gönderildi. Tabloyu kontrol et.");
   });
 
   $("addOp").addEventListener("click", function(){
