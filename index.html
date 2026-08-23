@@ -63,7 +63,7 @@ header{
 
 /* ---------- sekmeler ---------- */
 .tabs{
-  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;
   background:#E2E7E4;border-radius:12px;padding:4px;margin-bottom:18px;
 }
 .tab{
@@ -145,6 +145,36 @@ header{
 }
 .ghost:active{background:#E4EAE8}
 .note-actions .primary{margin-top:0}
+
+/* ---------- mevzuat ---------- */
+.ref-title{
+  margin:2px 2px 14px;font-size:14px;font-weight:600;color:var(--muted);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.group{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);margin-bottom:10px;overflow:hidden;
+}
+.group-head{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:0;background:transparent;font:inherit;font-size:15px;font-weight:600;
+  color:var(--ink);padding:15px 15px;cursor:pointer;text-align:left;
+}
+.group-head svg{width:18px;height:18px;flex:none;color:var(--muted);transition:transform .2s ease}
+.group.open .group-head svg{transform:rotate(180deg)}
+.group-body{display:none;padding:0 15px 6px}
+.group.open .group-body{display:block}
+.ref{
+  display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:11px 0;border-top:1px solid var(--line);
+}
+.ref span{font-size:14.5px;color:var(--ink)}
+.ref b{
+  font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  font-size:15px;font-weight:600;color:var(--accent-deep);white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.ref b i{font-style:normal;font-size:11.5px;font-weight:500;color:var(--muted);margin-left:2px}
 
 /* ---------- panel / kurulum ---------- */
 .panel{
@@ -242,6 +272,7 @@ header{
   <div class="tabs" role="tablist">
     <button class="tab" id="tabOlcum" role="tab" aria-selected="true" aria-controls="panelOlcum">Ölçüm</button>
     <button class="tab" id="tabIslem" role="tab" aria-selected="false" aria-controls="panelIslem">İşlem</button>
+    <button class="tab" id="tabMevzuat" role="tab" aria-selected="false" aria-controls="panelMevzuat">Mevzuat</button>
   </div>
 
   <section id="panelOlcum" role="tabpanel" aria-labelledby="tabOlcum">
@@ -256,6 +287,39 @@ header{
       <div class="note-actions">
         <button class="ghost" id="noteCancel">Vazgeç</button>
         <button class="primary" id="noteSend">Gönder</button>
+      </div>
+    </div>
+  </section>
+  <section id="panelMevzuat" role="tabpanel" aria-labelledby="tabMevzuat" hidden>
+    <h2 class="ref-title">Mevzuat Değerleri</h2>
+
+    <div class="group open" id="grpDaily">
+      <button class="group-head" type="button" aria-expanded="true">
+        <span>Günlük ölçümler</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="ref"><span>pH</span><b>6.5 – 7.8</b></div>
+        <div class="ref"><span>Serbest klor</span><b>1.0 – 1.5 <i>ppm</i></b></div>
+        <div class="ref"><span>Bağlı klor</span><b>≤ 0.2 <i>ppm</i></b></div>
+        <div class="ref"><span>Toplam alkalinite</span><b>30 – 180 <i>ppm</i></b></div>
+        <div class="ref"><span>Su sıcaklığı</span><b>26 – 28 <i>°C</i></b></div>
+      </div>
+    </div>
+
+    <div class="group" id="grpLab">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Halk sağlığı denetimi</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="ref"><span>Bakır</span><b>≤ 1 <i>ppm</i></b></div>
+        <div class="ref"><span>Nitrat</span><b>≤ 50 <i>ppm</i></b></div>
+        <div class="ref"><span>Amonyum</span><b>≤ 0.5 <i>ppm</i></b></div>
+        <div class="ref"><span>Nitrit</span><b>≤ 0.5 <i>ppm</i></b></div>
+        <div class="ref"><span>Alüminyum</span><b>≤ 0.2 <i>ppm</i></b></div>
+        <div class="ref"><span>Bulanıklık</span><b>≤ 0.5 <i>NTU</i></b></div>
+        <div class="ref"><span>Renk</span><b>≤ 10 <i>Pt/Co</i></b></div>
       </div>
     </div>
   </section>
@@ -593,12 +657,13 @@ header{
 
   /* ---------- sekme geçişi ---------- */
   function showTab(which){
-    var isOlcum = which === "olcum";
-    $("tabOlcum").setAttribute("aria-selected", isOlcum ? "true" : "false");
-    $("tabIslem").setAttribute("aria-selected", isOlcum ? "false" : "true");
-    $("panelOlcum").hidden = !isOlcum;
-    $("panelIslem").hidden = isOlcum;
-    if (isOlcum) closeNote();
+    var map = { olcum:["tabOlcum","panelOlcum"], islem:["tabIslem","panelIslem"], mevzuat:["tabMevzuat","panelMevzuat"] };
+    Object.keys(map).forEach(function(k){
+      var on = (k === which);
+      $(map[k][0]).setAttribute("aria-selected", on ? "true" : "false");
+      $(map[k][1]).hidden = !on;
+    });
+    if (which !== "islem") closeNote();
   }
 
   /* ---------- ayarlar ---------- */
@@ -704,6 +769,15 @@ header{
 
   $("tabOlcum").addEventListener("click", function(){ showTab("olcum"); });
   $("tabIslem").addEventListener("click", function(){ showTab("islem"); });
+  $("tabMevzuat").addEventListener("click", function(){ showTab("mevzuat"); });
+
+  ["grpDaily","grpLab"].forEach(function(id){
+    var g = $(id);
+    g.querySelector(".group-head").addEventListener("click", function(){
+      var open = g.classList.toggle("open");
+      this.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
   $("sendOlcum").addEventListener("click", sendOlcum);
   $("noteCancel").addEventListener("click", closeNote);
   $("noteSend").addEventListener("click", sendNote);
