@@ -102,6 +102,13 @@ header{
   width:44px;flex:none;font-size:11.5px;color:var(--muted);
   letter-spacing:.03em;text-transform:none;
 }
+.seg{display:flex;gap:6px}
+.seg button{
+  border:1px solid var(--line);background:transparent;border-radius:9px;
+  font:inherit;font-size:14px;font-weight:550;color:var(--muted);
+  padding:7px 15px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* ---------- butonlar ---------- */
 .primary{
@@ -294,11 +301,11 @@ header{
   /* ---------- ölçüm alanları ---------- */
   var FIELDS = [
     { key:"ph",    label:"pH",                unit:"",     tick:"#C24B57" },
-    { key:"skl",   label:"Serbest klor",      unit:"mg/L", tick:"#0E7C7B" },
-    { key:"bkl",   label:"Bağlı klor",        unit:"mg/L", tick:"#3E8FA8" },
-    { key:"alk",   label:"Toplam alkalinite", unit:"mg/L", tick:"#6E8F3F" },
+    { key:"skl",   label:"Serbest klor",      unit:"ppm" , tick:"#0E7C7B" },
+    { key:"bkl",   label:"Bağlı klor",        unit:"ppm" , tick:"#3E8FA8" },
+    { key:"alk",   label:"Toplam alkalinite", unit:"ppm" , tick:"#6E8F3F" },
     { key:"sic",   label:"Su sıcaklığı",      unit:"°C",   tick:"#C98A2E" },
-    { key:"bul",   label:"Bulanıklık",        unit:"NTU",  tick:"#7B7F97" }
+    { key:"bul",   label:"Bulanıklık",        unit:"",     tick:"#7B7F97", choice:["Yok","Var"] }
   ];
   var DEFAULT_OPS = [
     "Kazan dairesi kontrol",
@@ -388,13 +395,54 @@ header{
   function buildFields(){
     var html = "";
     FIELDS.forEach(function(f){
-      html += '<div class="row" style="--tick:' + f.tick + '">' +
-                '<label for="f_' + f.key + '">' + f.label + '</label>' +
+      html += '<div class="row" style="--tick:' + f.tick + '">';
+      if (f.choice) {
+        html += '<label>' + f.label + '</label>' +
+                '<div class="seg" id="f_' + f.key + '" data-value="">' +
+                  f.choice.map(function(v){
+                    return '<button type="button" data-v="' + v + '">' + v + '</button>';
+                  }).join("") +
+                '</div>';
+      } else {
+        html += '<label for="f_' + f.key + '">' + f.label + '</label>' +
                 '<input id="f_' + f.key + '" type="text" inputmode="decimal" placeholder="—" autocomplete="off">' +
-                '<span class="unit">' + f.unit + '</span>' +
-              '</div>';
+                '<span class="unit">' + f.unit + '</span>';
+      }
+      html += '</div>';
     });
     $("fields").innerHTML = html;
+
+    FIELDS.forEach(function(f){
+      if (!f.choice) return;
+      var seg = $("f_" + f.key);
+      seg.addEventListener("click", function(e){
+        var b = e.target.closest("button");
+        if (!b) return;
+        var picked = b.getAttribute("data-v");
+        var already = seg.getAttribute("data-value") === picked;
+        seg.setAttribute("data-value", already ? "" : picked);
+        var all = seg.querySelectorAll("button");
+        for (var i = 0; i < all.length; i++) {
+          all[i].classList.toggle("on", !already && all[i] === b);
+        }
+      });
+    });
+  }
+
+  function readField(f){
+    var el = $("f_" + f.key);
+    return f.choice ? (el.getAttribute("data-value") || "") : el.value.trim();
+  }
+
+  function clearField(f){
+    var el = $("f_" + f.key);
+    if (f.choice) {
+      el.setAttribute("data-value", "");
+      var all = el.querySelectorAll("button");
+      for (var i = 0; i < all.length; i++) all[i].classList.remove("on");
+    } else {
+      el.value = "";
+    }
   }
 
   function padEndStr(s, n){ while (s.length < n) s += " "; return s; }
@@ -403,7 +451,7 @@ header{
   function sendOlcum(){
     var lines = [], any = false;
     FIELDS.forEach(function(f){
-      var v = $("f_" + f.key).value.trim();
+      var v = readField(f);
       if (!v) return;
       any = true;
       lines.push(padEndStr(f.label, 18) + padStartStr(v, 6) + (f.unit ? " " + f.unit : ""));
@@ -417,7 +465,7 @@ header{
     var msg = "🏊 <b>Havuz Ölçümü</b> — " + esc(stamp(true)) + "\n\n<pre>" + esc(lines.join("\n")) + "</pre>";
 
     send(msg).then(function(){
-      FIELDS.forEach(function(f){ $("f_" + f.key).value = ""; });
+      FIELDS.forEach(clearField);
       toast("Ölçüm gönderildi.");
     }).catch(function(err){
       toast(err.message, true);
