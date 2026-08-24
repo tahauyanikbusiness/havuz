@@ -8,6 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Havuz Kaydı</title>
+<meta name="description" content="Havuz su ölçümleri, işlem kayıtları ve klor dozaj hesabı.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E7C7B'/%3E%3Cpath d='M5 20c2.6 0 2.6-2.4 5.2-2.4S12.8 20 15.4 20s2.6-2.4 5.2-2.4S23.2 20 25.8 20' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M5 25c2.6 0 2.6-2.4 5.2-2.4S12.8 25 15.4 25s2.6-2.4 5.2-2.4S23.2 25 25.8 25' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' opacity='.55'/%3E%3Ccircle cx='22' cy='10' r='3.4' fill='%23fff' opacity='.9'/%3E%3C/svg%3E">
 <style>
 :root{
   --bg:#EDF0EE;
@@ -63,11 +66,11 @@ header{
 
 /* ---------- sekmeler ---------- */
 .tabs{
-  display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
   background:#E2E7E4;border-radius:12px;padding:4px;margin-bottom:18px;
 }
 .tab{
-  border:0;background:transparent;font:inherit;font-size:14.5px;font-weight:550;
+  border:0;background:transparent;font:inherit;font-size:13.5px;font-weight:550;
   color:var(--muted);padding:9px 0;border-radius:9px;cursor:pointer;
   transition:background .18s ease,color .18s ease;
 }
@@ -176,6 +179,14 @@ header{
 }
 .ref b i{font-style:normal;font-size:11.5px;font-weight:500;color:var(--muted);margin-left:2px}
 
+.prose{padding:12px 0 6px;border-top:1px solid var(--line);font-size:14.5px;line-height:1.6}
+.prose p{margin:0 0 11px}
+.prose p:last-child{margin-bottom:0}
+.prose b{font-weight:600}
+.seq{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:0 0 13px;font-size:13px}
+.seq i{font-style:normal;font-weight:550;background:var(--accent-soft);color:var(--accent-deep);padding:6px 10px;border-radius:8px}
+.seq b{color:var(--muted);font-weight:400}
+
 /* ---------- panel / kurulum ---------- */
 .panel{
   background:var(--surface);border:1px solid var(--line);
@@ -214,6 +225,52 @@ header{
 }
 .divider{height:1px;background:var(--line);margin:20px 0}
 .hint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+/* ---------- hesap ---------- */
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.modes button{
+  border:1px solid var(--line);background:var(--surface);border-radius:11px;
+  font:inherit;font-size:13.5px;font-weight:550;color:var(--muted);
+  padding:10px 4px;cursor:pointer;line-height:1.25;
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.modes button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.modes button small{display:block;font-size:11px;font-weight:450;opacity:.85;margin-top:2px}
+
+.row .pick{display:flex;gap:6px}
+.row .pick button{
+  border:1px solid var(--line);background:transparent;border-radius:9px;
+  font:inherit;font-size:13.5px;font-weight:550;color:var(--muted);
+  padding:6px 12px;cursor:pointer;
+}
+.row .pick button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.row.locked input{color:var(--muted)}
+
+.tape{margin-top:16px;border-top:2px solid var(--ink);padding-top:2px}
+.tape .step{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:9px 2px;border-bottom:1px dotted var(--line);font-size:14px;
+}
+.tape .step em{font-style:normal;color:var(--muted)}
+.tape .step b{
+  font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  font-size:14px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.dose{
+  margin-top:14px;background:var(--accent-deep);color:#fff;
+  border-radius:var(--radius);padding:16px 18px;
+}
+.dose .lbl{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#9CC9C8}
+.dose .val{
+  margin-top:3px;font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  font-size:34px;font-weight:600;line-height:1.1;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+}
+.dose .val small{font-size:17px;font-weight:500;margin-left:6px;letter-spacing:0}
+.dose .note{margin-top:9px;font-size:13px;color:#C2DEDD;line-height:1.5}
+.msg{margin-top:14px;border-radius:var(--radius);padding:13px 15px;font-size:14px;line-height:1.5}
+.msg.ok{background:var(--accent-soft);color:var(--accent-deep)}
+.msg.warn{background:#F7EADF;color:#7A4415}
 
 /* ---------- toast ---------- */
 #toast{
@@ -272,6 +329,7 @@ header{
   <div class="tabs" role="tablist">
     <button class="tab" id="tabOlcum" role="tab" aria-selected="true" aria-controls="panelOlcum">Ölçüm</button>
     <button class="tab" id="tabIslem" role="tab" aria-selected="false" aria-controls="panelIslem">İşlem</button>
+    <button class="tab" id="tabHesap" role="tab" aria-selected="false" aria-controls="panelHesap">Hesap</button>
     <button class="tab" id="tabMevzuat" role="tab" aria-selected="false" aria-controls="panelMevzuat">Mevzuat</button>
   </div>
 
@@ -290,6 +348,43 @@ header{
       </div>
     </div>
   </section>
+  <section id="panelHesap" role="tabpanel" aria-labelledby="tabHesap" hidden>
+    <div class="modes" id="calcModes">
+      <button type="button" class="on" data-mode="gunluk">Günlük<small>hedefe çek</small></button>
+      <button type="button" data-mode="onleyici">Önleyici<small>sabit hedef</small></button>
+      <button type="button" data-mode="tam">Tam şok<small>bağlı × 10</small></button>
+    </div>
+
+    <div class="readout">
+      <div class="row" style="--tick:#0E7C7B">
+        <label for="c_serbest">Ölçülen serbest klor</label>
+        <input id="c_serbest" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+        <span class="unit">ppm</span>
+      </div>
+      <div class="row" id="rowToplam" style="--tick:#3E8FA8" hidden>
+        <label for="c_toplam">Ölçülen toplam klor</label>
+        <input id="c_toplam" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+        <span class="unit">ppm</span>
+      </div>
+      <div class="row" id="rowHedef" style="--tick:#C98A2E">
+        <label for="c_hedef">Hedef klor</label>
+        <input id="c_hedef" type="text" inputmode="decimal" placeholder="—" autocomplete="off">
+        <span class="unit">ppm</span>
+      </div>
+      <div class="row" style="--tick:#7B7F97">
+        <label>Ürün</label>
+        <div class="pick" id="c_urun" data-value="toz">
+          <button type="button" class="on" data-v="toz">Granül</button>
+          <button type="button" data-v="sivi">Sıvı</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="primary" id="calcRun">Hesapla</button>
+    <div id="calcOut"></div>
+    <p class="hint">Hesap teorik ihtiyacı verir; organik yük varsa ölçüm beklenenden düşük çıkabilir. Bu ekran kayıt göndermez.</p>
+  </section>
+
   <section id="panelMevzuat" role="tabpanel" aria-labelledby="tabMevzuat" hidden>
     <h2 class="ref-title">Mevzuat Değerleri</h2>
 
@@ -322,6 +417,99 @@ header{
         <div class="ref"><span>Renk</span><b>≤ 10 <i>Pt/Co</i></b></div>
       </div>
     </div>
+
+    <h2 class="ref-title" style="margin-top:24px">Kılavuz</h2>
+
+    <div class="group" id="grpTest">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Test tabletleri</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p><b>Phenol Red</b> — pH ölçer.</p>
+          <p><b>DPD1</b> — serbest kloru ölçer. Dezenfeksiyon yapabilecek durumdaki klordur.</p>
+          <p><b>DPD3</b> — DPD1 ile ölçülmüş numuneye eklenir, toplam kloru verir. Renk değişmezse bağlı klor yok demektir.</p>
+          <p><b>Bağlı klor = toplam klor − serbest klor</b></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpBagli">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Bağlı klor</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p>Klor; ter, idrar, krem ve bakteri gibi organik kirleticilerle tepkimeye girdiğinde bağlı klora dönüşür. Dezenfeksiyon gücü kalmaz ama suda kalmaya devam eder ve birikir.</p>
+          <p>Kapalı havuzda o keskin kokunun, göz ve cilt tahrişinin sebebi budur. Klor fazlalığı değil, kirlilik göstergesidir.</p>
+          <p>Sınır 0,2 ppm. Aşıldığında iki yol var: şoklama ile parçalamak ya da suyun bir kısmını tazelemek.</p>
+          <p>Birikimi yavaşlatmak için girişte duş, bez kullanan çocukların havuza alınmaması, yabancı maddelerin hemen toplanması, düzenli su tazeleme.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpSok">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Şoklama</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p><b>Önleyici</b> — bağlı klor henüz sınırın altındayken rutin olarak yapılır. Birikimin başlamasını engeller, havuz kısa süre kapalı kalır.</p>
+          <p><b>Tam şok</b> — bağlı klor 0,2 ppm'i aştığında yapılır. Hedef, bağlı klorun 10 katıdır; mevcut serbest klor bu hedeften düşülerek eklenecek miktar bulunur. Doz yetersiz kalırsa tepkime tamamlanmaz, daha fazla bağlı klor oluşur.</p>
+          <p>Ayrıca sezon başında, büyük miktarda su tazelendiğinde ve su bulanıklaştığında şoklama gerekir.</p>
+          <p>İşlem boyunca havuz kullanıma kapatılır, sirkülasyon sürekli çalıştırılır. Klor normale inmeden havuz açılmaz.</p>
+          <p>Şoklamayı pH 7,2–7,4 aralığındayken yap. pH yüksekken klorun etkinliği düşer, dozun bir kısmı boşa gider.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpSiya">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Siyanürik asit</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p>Granül ve tablet klorlara, klorun suda daha uzun kalması için stabilizatör eklenir. Klor tükenir ama stabilizatör siyanürik asit olarak birikir.</p>
+          <p>50 ppm üzerinde klor kilitlenmesi başlar: ölçümde klor görünür ama iş görmez. Tek çözüm suyun kısmen tazelenmesidir, kimyasalla düşürülemez.</p>
+          <p>Kapalı havuzda güneş etkisi olmadığı için stabilizatöre ihtiyaç azdır; stabilizatörsüz ürün kullanılıyorsa bu birikim oluşmaz. Ayda bir ölçülür.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpFiltre">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Filtre işlemleri</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <div class="seq"><i>Dip süpürme</i><b>→</b><i>Ters yıkama</i><b>→</b><i>Durulama</i></div>
+          <p><b>Dip süpürme</b> — altı yollu vana filtre konumundayken yapılır. Kum filtresinde yoğun kir birikmesine yol açar, ardından ters yıkama şart.</p>
+          <p><b>Ters yıkama</b> — su filtrede ters yönde akar, giriş tarafındaki kir tahliyeye gider. Gözlem penceresindeki su berraklaşınca durdur; fazlası kum kaybettirir.</p>
+          <p><b>Durulama</b> — ters yıkamada çıkış tarafında kalan kiri atar. Yapılmazsa o kir havuza döner. Su berraklaşınca vana filtre konumuna alınır.</p>
+          <p>Altı yollu vana yalnızca <b>motor dururken</b> çevrilir.</p>
+          <p>Bu işlemlerde su tahliye edildiği için havuz seviyesi düşer; otomatik tamamlama yoksa elle takviye gerekir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpYuksek">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Klor yüksek çıkarsa</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p>Klor düşürmenin pratik bir kimyasal yolu yoktur. Beklersin ya da su tazelersin.</p>
+          <p>Kapalı havuzda güneş olmadığı için düşüş yavaştır; açık havuza göre belirgin şekilde uzun sürer.</p>
+          <p>Acil durumda klor nötralizörü kullanılabilir, ancak doz kaçarsa klor sıfırlanır ve havuz savunmasız kalır. Son çare olarak düşünülmeli.</p>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -350,6 +538,57 @@ header{
     </div>
     <button class="ghost" id="cfgSheetTest" style="width:100%">Tabloya test satırı yaz</button>
     <p class="hint">Google, yazma işleminin sonucunu uygulamaya bildirmiyor. Test satırının düştüğünü tablodan gözle kontrol et.</p>
+
+    <div class="divider"></div>
+
+    <h2>Havuz ve kimyasal</h2>
+    <p>Hesap sekmesi bu değerleri kullanır. Bir kez gir, ürün değişirse oranı güncelle.</p>
+    <div class="field">
+      <span>Havuz hacmi (m³)</span>
+      <input id="cfgHacim" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 550">
+    </div>
+    <div class="field">
+      <span>Granül klor aktif oranı (%)</span>
+      <input id="cfgToz" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 70">
+    </div>
+    <div class="field">
+      <span>Sıvı klor oranı (%)</span>
+      <input id="cfgSivi" type="text" inputmode="decimal" autocomplete="off" placeholder="örn. 12.5">
+    </div>
+    <div class="field">
+      <span>Sıvı klor yoğunluğu (kg/L)</span>
+      <input id="cfgYog" type="text" inputmode="decimal" autocomplete="off" placeholder="1.2">
+    </div>
+    <div class="field">
+      <span>Günlük hedef klor (ppm)</span>
+      <input id="cfgGunluk" type="text" inputmode="decimal" autocomplete="off" placeholder="1.5">
+    </div>
+    <div class="field">
+      <span>Önleyici şok hedefi (ppm)</span>
+      <input id="cfgSok" type="text" inputmode="decimal" autocomplete="off" placeholder="4">
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>Boyutlardan hacim</h2>
+    <p>Hacmi bilmiyorsan ölçüleri gir, hesaplayıp yukarıdaki alana yazsın.</p>
+    <div class="field">
+      <span>Uzunluk (m)</span>
+      <input id="dimBoy" type="text" inputmode="decimal" autocomplete="off">
+    </div>
+    <div class="field">
+      <span>Genişlik (m)</span>
+      <input id="dimEn" type="text" inputmode="decimal" autocomplete="off">
+    </div>
+    <div class="field">
+      <span>Sığ uç derinliği (m)</span>
+      <input id="dimSig" type="text" inputmode="decimal" autocomplete="off">
+    </div>
+    <div class="field">
+      <span>Derin uç (m) — eşitse boş bırak</span>
+      <input id="dimDerin" type="text" inputmode="decimal" autocomplete="off">
+    </div>
+    <button class="ghost" id="dimCalc" style="width:100%">Hacmi hesapla</button>
 
     <div class="divider"></div>
 
@@ -389,6 +628,15 @@ header{
     "Dip süpürge"
   ];
 
+  /* Virgülü de kabul eden sayı okuyucu. Geçersizse NaN döner. */
+  function num(v){
+    if (v === null || v === undefined) return NaN;
+    var s = String(v).trim().replace(",", ".");
+    if (!s) return NaN;
+    var n = parseFloat(s);
+    return isFinite(n) ? n : NaN;
+  }
+
   /* ---------- saklama (localStorage yoksa hafızada) ---------- */
   var mem = {};
   var store = {
@@ -409,7 +657,13 @@ header{
     ops:   (function(){
       try { var raw = store.get("hk_ops"); return raw ? JSON.parse(raw) : DEFAULT_OPS.slice(); }
       catch(e){ return DEFAULT_OPS.slice(); }
-    })()
+    })(),
+    hacim:  num(store.get("hk_hacim"))  || 0,
+    toz:    num(store.get("hk_toz"))    || 0,
+    sivi:   num(store.get("hk_sivi"))   || 0,
+    yog:    num(store.get("hk_yog"))    || 1.2,
+    gunluk: num(store.get("hk_gunluk")) || 1.5,
+    sok:    num(store.get("hk_sok"))    || 4
   };
 
   function saveCfg(){
@@ -417,6 +671,12 @@ header{
     store.set("hk_chat",  cfg.chat);
     store.set("hk_sheet", cfg.sheet);
     store.set("hk_ops",   JSON.stringify(cfg.ops));
+    store.set("hk_hacim",  cfg.hacim);
+    store.set("hk_toz",    cfg.toz);
+    store.set("hk_sivi",   cfg.sivi);
+    store.set("hk_yog",    cfg.yog);
+    store.set("hk_gunluk", cfg.gunluk);
+    store.set("hk_sok",    cfg.sok);
   }
 
   var $ = function(id){ return document.getElementById(id); };
@@ -655,9 +915,143 @@ header{
     });
   }
 
+  /* ---------- hesap sekmesi ---------- */
+  var MODE = "gunluk";
+
+  function fmt(n, d){
+    return n.toLocaleString("tr-TR", { minimumFractionDigits:d, maximumFractionDigits:d });
+  }
+
+  /* Saf klor kilogramını, ürünün aktif oranına ve tipine göre okunur miktara çevirir. */
+  function doz(safKg, oran, tip){
+    var urunKg = safKg / (oran / 100);
+    if (tip === "sivi") {
+      var litre = urunKg / (cfg.yog || 1.2);
+      if (litre < 1) return { val: fmt(litre * 1000, 0), unit:"ml", alt: fmt(urunKg, 2) + " kg ürün" };
+      return { val: fmt(litre, 2), unit:"litre", alt: fmt(urunKg, 2) + " kg ürün" };
+    }
+    if (urunKg < 1) return { val: fmt(urunKg * 1000, 0), unit:"gram", alt:null };
+    return { val: fmt(urunKg, 2), unit:"kg", alt:null };
+  }
+
+  function calcMsg(kind, text){
+    $("calcOut").innerHTML = '<div class="msg ' + kind + '">' + text + '</div>';
+  }
+
+  function setMode(mode){
+    MODE = mode;
+    var btns = $("calcModes").querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("on", btns[i].getAttribute("data-mode") === mode);
+    }
+
+    var rowHedef = $("rowHedef");
+    var hedefIn  = $("c_hedef");
+
+    $("rowToplam").hidden = (mode !== "tam");
+    rowHedef.hidden = (mode === "tam");
+    rowHedef.classList.remove("locked");
+
+    if (mode === "gunluk") hedefIn.value = cfg.gunluk || 1.5;
+    if (mode === "onleyici") hedefIn.value = cfg.sok || 4;
+
+    $("calcOut").innerHTML = "";
+  }
+
+  function runCalc(){
+    $("calcOut").innerHTML = "";
+
+    if (!cfg.hacim) { calcMsg("warn", "Önce ayarlardan havuz hacmini gir."); return; }
+
+    var serbest = num($("c_serbest").value);
+    if (isNaN(serbest)) { calcMsg("warn", "Ölçülen serbest klor değerini gir."); return; }
+
+    var tip  = $("c_urun").getAttribute("data-value");
+    var oran = (tip === "sivi") ? cfg.sivi : cfg.toz;
+    if (!oran) {
+      calcMsg("warn", "Ayarlardan " + (tip === "sivi" ? "sıvı" : "granül") + " klorun aktif oranını gir.");
+      return;
+    }
+
+    var steps = [], hedef, note, bagli = null;
+
+    if (MODE === "tam") {
+      var toplam = num($("c_toplam").value);
+      if (isNaN(toplam)) { calcMsg("warn", "Toplam klor değerini gir (DPD3)."); return; }
+      if (toplam < serbest) { calcMsg("warn", "Toplam klor serbest klordan küçük olamaz. Ölçümleri kontrol et."); return; }
+
+      bagli = toplam - serbest;
+      if (bagli <= 0.2) {
+        calcMsg("ok", "Bağlı klor " + fmt(bagli, 2) + " ppm — sınır içinde, tam şok gerekmiyor. Rutin önlem için Önleyici moda geç.");
+        return;
+      }
+      hedef = bagli * 10;
+      steps.push(["Bağlı klor", fmt(bagli, 2) + " ppm"]);
+      steps.push(["Hedef (bağlı × 10)", fmt(hedef, 2) + " ppm"]);
+      note = "Havuz kullanıma kapatılır, sirkülasyon sürekli çalışır. Klor normale inmeden açılmaz.";
+    } else {
+      hedef = num($("c_hedef").value);
+      if (isNaN(hedef)) { calcMsg("warn", "Hedef klor değerini gir."); return; }
+      steps.push(["Hedef serbest klor", fmt(hedef, 2) + " ppm"]);
+      note = (MODE === "onleyici")
+        ? "Önleyici doz. Klor normale inene kadar havuz kapalı tutulur."
+        : null;
+    }
+
+    var fark = hedef - serbest;
+    if (fark <= 0) {
+      calcMsg("ok", "Serbest klor zaten hedefte veya üstünde (" + fmt(serbest, 2) + " ppm). Ekleme gerekmiyor.");
+      return;
+    }
+
+    var safKg = fark * cfg.hacim / 1000;
+    var d = doz(safKg, oran, tip);
+
+    steps.push(["Mevcut serbest klor", fmt(serbest, 2) + " ppm"]);
+    steps.push(["Gereken artış", fmt(fark, 2) + " ppm"]);
+    steps.push(["Saf klor", fmt(safKg, 3) + " kg"]);
+    steps.push(["Aktif oran", "%" + fmt(oran, 0)]);
+    steps.push(["Havuz hacmi", fmt(cfg.hacim, 0) + " m³"]);
+
+    var html = '<div class="tape">';
+    steps.forEach(function(s){
+      html += '<div class="step"><em>' + esc(s[0]) + '</em><b>' + esc(s[1]) + '</b></div>';
+    });
+    html += '</div>';
+
+    html += '<div class="dose"><div class="lbl">Eklenecek miktar</div>' +
+            '<div class="val">' + d.val + '<small>' + d.unit + '</small></div>';
+    var full = (d.alt ? "Ağırlık karşılığı " + d.alt + ". " : "") + (note || "");
+    if (full.trim()) html += '<div class="note">' + esc(full.trim()) + '</div>';
+    html += '</div>';
+
+    if (MODE === "tam" && hedef < (cfg.sok || 4)) {
+      html += '<div class="msg warn">Bu doz, önleyici şok hedefinden (' + fmt(cfg.sok || 4, 1) +
+              ' ppm) düşük. Bağlı klor ' + fmt(bagli, 2) +
+              ' ppm için breakpoint yeterli; istersen rutin hedefini uygulayabilirsin.</div>';
+    }
+
+    $("calcOut").innerHTML = html;
+  }
+
+  function dimCalc(){
+    var boy = num($("dimBoy").value), en = num($("dimEn").value);
+    var sig = num($("dimSig").value), derin = num($("dimDerin").value);
+    if (isNaN(boy) || isNaN(en) || isNaN(sig)) { toast("Uzunluk, genişlik ve sığ uç derinliğini gir."); return; }
+    var ort = isNaN(derin) ? sig : (sig + derin) / 2;
+    var hacim = boy * en * ort;
+    $("cfgHacim").value = Math.round(hacim);
+    toast(fmt(hacim, 1) + " m³ — hacim alanına yazıldı.");
+  }
+
   /* ---------- sekme geçişi ---------- */
   function showTab(which){
-    var map = { olcum:["tabOlcum","panelOlcum"], islem:["tabIslem","panelIslem"], mevzuat:["tabMevzuat","panelMevzuat"] };
+    var map = {
+      olcum:["tabOlcum","panelOlcum"],
+      islem:["tabIslem","panelIslem"],
+      hesap:["tabHesap","panelHesap"],
+      mevzuat:["tabMevzuat","panelMevzuat"]
+    };
     Object.keys(map).forEach(function(k){
       var on = (k === which);
       $(map[k][0]).setAttribute("aria-selected", on ? "true" : "false");
@@ -697,6 +1091,12 @@ header{
     $("cfgToken").value = cfg.token;
     $("cfgChat").value = cfg.chat;
     $("cfgSheet").value = cfg.sheet;
+    $("cfgHacim").value  = cfg.hacim  || "";
+    $("cfgToz").value    = cfg.toz    || "";
+    $("cfgSivi").value   = cfg.sivi   || "";
+    $("cfgYog").value    = cfg.yog    || "";
+    $("cfgGunluk").value = cfg.gunluk || "";
+    $("cfgSok").value    = cfg.sok    || "";
     buildChips();
     $("app").hidden = true;
     $("setup").hidden = true;
@@ -707,7 +1107,16 @@ header{
     cfg.token = $("cfgToken").value.trim();
     cfg.chat  = $("cfgChat").value.trim();
     cfg.sheet = $("cfgSheet").value.trim();
+
+    cfg.hacim  = num($("cfgHacim").value)  || 0;
+    cfg.toz    = num($("cfgToz").value)    || 0;
+    cfg.sivi   = num($("cfgSivi").value)   || 0;
+    cfg.yog    = num($("cfgYog").value)    || 1.2;
+    cfg.gunluk = num($("cfgGunluk").value) || 1.5;
+    cfg.sok    = num($("cfgSok").value)    || 4;
+
     saveCfg();
+    setMode(MODE);
     $("settings").hidden = true;
     route();
   }
@@ -769,15 +1178,35 @@ header{
 
   $("tabOlcum").addEventListener("click", function(){ showTab("olcum"); });
   $("tabIslem").addEventListener("click", function(){ showTab("islem"); });
+  $("tabHesap").addEventListener("click", function(){ showTab("hesap"); });
   $("tabMevzuat").addEventListener("click", function(){ showTab("mevzuat"); });
 
-  ["grpDaily","grpLab"].forEach(function(id){
-    var g = $(id);
-    g.querySelector(".group-head").addEventListener("click", function(){
-      var open = g.classList.toggle("open");
-      this.setAttribute("aria-expanded", open ? "true" : "false");
-    });
+  var groups = document.querySelectorAll("#panelMevzuat .group");
+  for (var gi = 0; gi < groups.length; gi++) {
+    (function(g){
+      g.querySelector(".group-head").addEventListener("click", function(){
+        var open = g.classList.toggle("open");
+        this.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    })(groups[gi]);
+  }
+
+  $("calcModes").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (b) setMode(b.getAttribute("data-mode"));
   });
+
+  $("c_urun").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if (!b) return;
+    this.setAttribute("data-value", b.getAttribute("data-v"));
+    var all = this.querySelectorAll("button");
+    for (var i = 0; i < all.length; i++) all[i].classList.toggle("on", all[i] === b);
+    $("calcOut").innerHTML = "";
+  });
+
+  $("calcRun").addEventListener("click", runCalc);
+  $("dimCalc").addEventListener("click", dimCalc);
   $("sendOlcum").addEventListener("click", sendOlcum);
   $("noteCancel").addEventListener("click", closeNote);
   $("noteSend").addEventListener("click", sendNote);
@@ -785,6 +1214,7 @@ header{
   /* ---------- başlat ---------- */
   buildFields();
   buildOps();
+  setMode("gunluk");
   showTab("olcum");
   route();
 })();
