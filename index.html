@@ -7,10 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230E7C7B%27/%3E%3Cpath d=%27M5 20c3-3 5.5-3 8.5 0s5.5 3 8.5 0 5.5-3 8.5 0%27 stroke=%27white%27 stroke-width=%272.4%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M5 25c3-3 5.5-3 8.5 0s5.5 3 8.5 0 5.5-3 8.5 0%27 stroke=%27white%27 stroke-width=%272.4%27 fill=%27none%27 stroke-linecap=%27round%27 opacity=%27.55%27/%3E%3C/svg%3E">
 <title>Havuz Kaydı</title>
-<meta name="description" content="Havuz su ölçümleri, işlem kayıtları ve klor dozaj hesabı.">
-<meta name="robots" content="noindex">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E7C7B'/%3E%3Cpath d='M5 20c2.6 0 2.6-2.4 5.2-2.4S12.8 20 15.4 20s2.6-2.4 5.2-2.4S23.2 20 25.8 20' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M5 25c2.6 0 2.6-2.4 5.2-2.4S12.8 25 15.4 25s2.6-2.4 5.2-2.4S23.2 25 25.8 25' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' opacity='.55'/%3E%3Ccircle cx='22' cy='10' r='3.4' fill='%23fff' opacity='.9'/%3E%3C/svg%3E">
 <style>
 :root{
   --bg:#EDF0EE;
@@ -186,6 +185,53 @@ header{
 .seq{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:0 0 13px;font-size:13px}
 .seq i{font-style:normal;font-weight:550;background:var(--accent-soft);color:var(--accent-deep);padding:6px 10px;border-radius:8px}
 .seq b{color:var(--muted);font-weight:400}
+
+.valve-note{
+  margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5;
+  background:var(--accent-soft);border-radius:9px;padding:9px 11px;
+}
+.valve{margin:0 0 14px}
+.valve:last-child{margin-bottom:6px}
+.valve-cap{
+  display:flex;align-items:center;gap:8px;margin:0 0 7px;
+  font-size:13px;font-weight:600;color:var(--accent-deep);
+}
+.valve-cap em{
+  font-style:normal;font-weight:500;color:var(--muted);font-size:12px;
+}
+.valve figure{margin:0;position:relative}
+.valve img{
+  display:block;width:100%;height:auto;border-radius:10px;
+  border:1px solid var(--line);background:#E4EAE8;cursor:zoom-in;
+}
+.valve .fallback{
+  display:none;font-size:13px;color:var(--muted);line-height:1.5;
+  border:1px dashed var(--line);border-radius:10px;padding:14px 12px;text-align:center;
+}
+.valve.broken img{display:none}
+.valve.broken .fallback{display:block}
+.valve .states{
+  display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;
+}
+.valve .states span{
+  font-size:11.5px;font-weight:600;letter-spacing:.02em;
+  padding:4px 8px;border-radius:7px;
+}
+.valve .states .on{background:#DDEEE4;color:#1F6B45}
+.valve .states .off{background:#F0E2E2;color:#8E3B3B}
+
+#lightbox{
+  position:fixed;inset:0;background:rgba(10,26,25,.92);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:12px;
+}
+#lightbox.on{display:flex}
+#lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+#lightbox .close{
+  position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;
+  width:38px;height:38px;border-radius:11px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:22px;line-height:1;
+  display:grid;place-items:center;padding:0;
+}
 
 /* ---------- panel / kurulum ---------- */
 .panel{
@@ -487,12 +533,66 @@ header{
       </button>
       <div class="group-body">
         <div class="prose">
-          <div class="seq"><i>Dip süpürme</i><b>→</b><i>Ters yıkama</i><b>→</b><i>Durulama</i></div>
-          <p><b>Dip süpürme</b> — altı yollu vana filtre konumundayken yapılır. Kum filtresinde yoğun kir birikmesine yol açar, ardından ters yıkama şart.</p>
+          <div class="seq"><i>Ters yıkama</i><b>→</b><i>Durulama</i><b>→</b><i>Filtrasyon</i></div>
           <p><b>Ters yıkama</b> — su filtrede ters yönde akar, giriş tarafındaki kir tahliyeye gider. Gözlem penceresindeki su berraklaşınca durdur; fazlası kum kaybettirir.</p>
-          <p><b>Durulama</b> — ters yıkamada çıkış tarafında kalan kiri atar. Yapılmazsa o kir havuza döner. Su berraklaşınca vana filtre konumuna alınır.</p>
-          <p>Altı yollu vana yalnızca <b>motor dururken</b> çevrilir.</p>
+          <p><b>Durulama</b> — ters yıkamada çıkış tarafında kalan kiri atar. Yapılmazsa o kir havuza döner. Su berraklaşınca filtrasyona dönülür.</p>
+          <p>Vanalar yalnızca <b>motor dururken</b> çevrilir.</p>
           <p>Bu işlemlerde su tahliye edildiği için havuz seviyesi düşer; otomatik tamamlama yoksa elle takviye gerekir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpVana">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Vana pozisyonları (5 vanalı sistem)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p class="valve-note">Referans görsel — kendi tesisatınla birebir aynı olmayabilir, mantık aynıdır. 6 yollu vanada kılavuz vananın kendi üzerinde yazar.</p>
+
+          <div class="valve">
+            <div class="valve-cap">Filtrasyon <em>· normal duruş</em></div>
+            <figure>
+              <img src="filtrasyon.jpg" alt="Filtrasyon modunda vana pozisyonları" loading="lazy">
+              <div class="fallback">Görsel yüklenemedi.<br>filtrasyon.jpg dosyası HTML ile aynı klasörde olmalı.</div>
+            </figure>
+            <div class="states"><span class="on">Sol üst AÇIK</span><span class="off">Üst orta KAPALI</span><span class="off">Orta KAPALI</span><span class="off">Sol alt KAPALI</span><span class="on">Sağ alt AÇIK</span></div>
+          </div>
+
+          <div class="valve">
+            <div class="valve-cap">Ters yıkama</div>
+            <figure>
+              <img src="ters-yikama.jpg" alt="Ters yıkama modunda vana pozisyonları" loading="lazy">
+              <div class="fallback">Görsel yüklenemedi.<br>ters-yikama.jpg dosyası HTML ile aynı klasörde olmalı.</div>
+            </figure>
+            <div class="states"><span class="off">Sol üst KAPALI</span><span class="on">Üst orta AÇIK</span><span class="off">Orta KAPALI</span><span class="on">Sol alt AÇIK</span><span class="off">Sağ alt KAPALI</span></div>
+          </div>
+
+          <div class="valve">
+            <div class="valve-cap">Durulama</div>
+            <figure>
+              <img src="durulama.jpg" alt="Durulama modunda vana pozisyonları" loading="lazy">
+              <div class="fallback">Görsel yüklenemedi.<br>durulama.jpg dosyası HTML ile aynı klasörde olmalı.</div>
+            </figure>
+            <div class="states"><span class="on">Sol üst AÇIK</span><span class="off">Üst orta KAPALI</span><span class="on">Orta AÇIK</span><span class="off">Sol alt KAPALI</span><span class="off">Sağ alt KAPALI</span></div>
+          </div>
+
+          <p style="margin-top:14px">Ortadaki vana yalnızca <b>durulamada</b> açılır. Filtrasyon ile ters yıkama birbirinin tersidir.</p>
+          <p>Görsele dokununca büyür.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group" id="grpDip">
+      <button class="group-head" type="button" aria-expanded="false">
+        <span>Dip süpürme</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="group-body">
+        <div class="prose">
+          <p>Altı yollu vanada filtre konumundayken, 5 vanalı sistemde filtrasyon pozisyonunda yapılır.</p>
+          <p>Kum filtresinde yoğun kir birikmesine yol açar; ardından <b>ters yıkama</b> şarttır.</p>
         </div>
       </div>
     </div>
@@ -512,6 +612,11 @@ header{
     </div>
   </section>
 </main>
+
+<div id="lightbox">
+  <button class="close" type="button" id="lbClose" aria-label="Kapat">&times;</button>
+  <img id="lbImg" alt="">
+</div>
 
 <!-- AYARLAR -->
 <section id="settings" hidden>
@@ -1210,6 +1315,24 @@ header{
   $("sendOlcum").addEventListener("click", sendOlcum);
   $("noteCancel").addEventListener("click", closeNote);
   $("noteSend").addEventListener("click", sendNote);
+
+  /* ---------- vana görselleri ---------- */
+  var vimgs = document.querySelectorAll(".valve img");
+  for (var vi = 0; vi < vimgs.length; vi++) {
+    (function(im){
+      function broke(){ im.closest(".valve").classList.add("broken"); }
+      im.addEventListener("error", broke);
+      if (im.complete && im.naturalWidth === 0) broke();
+      im.addEventListener("click", function(){
+        $("lbImg").src = im.src;
+        $("lightbox").classList.add("on");
+      });
+    })(vimgs[vi]);
+  }
+  $("lightbox").addEventListener("click", function(){
+    this.classList.remove("on");
+    $("lbImg").src = "";
+  });
 
   /* ---------- başlat ---------- */
   buildFields();
